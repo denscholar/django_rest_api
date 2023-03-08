@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from .serializer import BlogSerializer
+from .serializer import BlogSerializer, CategorySerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import Blog
+from .models import Blog, Category
 
 # GET, POST
 class AllBlogView(APIView):
@@ -61,3 +61,23 @@ class BlogDetailView(APIView):
         post = Blog.objects.all(pk=pk)
         post.delete()
         return Response(status=status.HTTP_200_OK)
+    
+class CategoryListView(APIView):
+    def get(self, request):
+        category = Category.objects.all()
+        serializer = CategorySerializer(category, many=True)
+        response = {
+            "message": "all category",
+            "data": serializer.data
+        }
+        return Response(data=response, status=status.HTTP_200_OK)
+    
+class CategoryDetailView(APIView):
+    def get(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        serializer = CategorySerializer(category)
+        response = {
+            "message": "categoory_detail",
+            "data": serializer.data,
+        }
+        return Response(data=response, status=status.HTTP_200_OK)
